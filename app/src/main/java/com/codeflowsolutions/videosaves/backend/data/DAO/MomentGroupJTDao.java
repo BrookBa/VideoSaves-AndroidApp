@@ -1,7 +1,10 @@
-package com.codeflowsolutions.videosaves.backend.data;
+package com.codeflowsolutions.videosaves.backend.data.DAO;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
+
+import com.codeflowsolutions.videosaves.backend.data.GroupEntity;
+import com.codeflowsolutions.videosaves.backend.data.MomentEntity;
 
 import java.util.List;
 

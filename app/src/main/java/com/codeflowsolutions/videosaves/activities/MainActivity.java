@@ -7,6 +7,8 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 
+import com.codeflowsolutions.videosaves.backend.data.Managers.MomentManager;
+import com.codeflowsolutions.videosaves.backend.data.Managers.StateManager;
 import com.codeflowsolutions.videosaves.backend.data.MomentEntity;
 import com.codeflowsolutions.videosaves.backend.data.StateEntity;
 import com.codeflowsolutions.videosaves.backend.data.VideoDatabase;
@@ -19,6 +21,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.newrelic.agent.android.NewRelic;
 
@@ -30,16 +33,28 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     private EditText videoID;
     private EditText momentLabel;
     private EditText momentDescription;
-    private Button changeVideo;
+    //Buttons
+    private Button bForward;
     private Button createMoment;
+    private Button bBack;
+
     private Button submitMoment;
+
+    private Button changeVideo;
+    private Button resumePlaylist;
+    private Button changePlaylist;
+
     private Button loadMoment;
     private Button deleteMoment;
+    private Button momentDetails;
+
     private LinearLayout momentCreation;
     private RadioGroup moments;
+
     private MomentEntity activeMoment;
     private List<MomentEntity> allMoments;
-    private VideoDatabase database;
+    private MomentManager momentManager;
+    private StateManager stateManager;
     private StateEntity state;
     private static String DEVELOPER_KEY = "AIzaSyDtKCvyIvaNqYliqu1rafJz2l42_t";
 
@@ -59,19 +74,34 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         this.videoID = (EditText) this.findViewById(R.id.video_id);
         this.momentLabel = (EditText) this.findViewById(R.id.edit_moment_label);
         this.momentDescription = (EditText) this.findViewById(R.id.edit_moment_description);
-        this.changeVideo = (Button) this.findViewById(R.id.button_change_video);
-        this.changeVideo.setOnClickListener(this);
-        this.createMoment = (Button) this.findViewById(R.id.button_create_moment);
-        this.createMoment.setOnClickListener(this);
-        this.submitMoment = (Button) this.findViewById(R.id.button_submit_moment);
-        this.submitMoment.setOnClickListener(this);
-        this.loadMoment = (Button) this.findViewById(R.id.button_load_moment);
-        this.loadMoment.setOnClickListener(this);
         this.moments = (RadioGroup) this.findViewById(R.id.moments_list);
-        this.deleteMoment = (Button) this.findViewById(R.id.button_delete_moment);
-        this.deleteMoment.setOnClickListener(this);
 
-        this.database = VideoDatabase.getInstance(this);
+        //Buttons
+        this.bForward = (Button) this.findViewById(R.id.b_forward);
+        this.createMoment = (Button) this.findViewById(R.id.button_create_moment);
+        this.bBack = (Button) this.findViewById(R.id.b_rewind);
+        this.submitMoment = (Button) this.findViewById(R.id.button_submit_moment);
+        this.changeVideo = (Button) this.findViewById(R.id.button_change_video);
+        this.resumePlaylist = (Button) this.findViewById(R.id.b_resume_playlist);
+        this.changePlaylist = (Button) this.findViewById(R.id.b_change_playlist);
+        this.loadMoment = (Button) this.findViewById(R.id.button_load_moment);
+        this.deleteMoment = (Button) this.findViewById(R.id.button_delete_moment);
+        this.momentDetails = (Button) this.findViewById(R.id.b_moment_details);
+        this.bForward.setOnClickListener(this);
+        this.createMoment.setOnClickListener(this);
+        this.bBack.setOnClickListener(this);
+        this.submitMoment.setOnClickListener(this);
+        this.changeVideo.setOnClickListener(this);
+        this.resumePlaylist.setOnClickListener(this);
+        this.changePlaylist.setOnClickListener(this);
+        this.loadMoment.setOnClickListener(this);
+        this.deleteMoment.setOnClickListener(this);
+        this.momentDetails.setOnClickListener(this);
+
+
+        this.stateManager = new StateManager(this);
+        this.momentManager = new MomentManager(this);
+
         //Load State
         new Thread(new Runnable() {
             @Override
@@ -105,37 +135,50 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     @Override
     public void onClick(View view){
         switch (view.getId()){
-            case R.id.button_change_video:
-                if(this.player != null){
-                    player.cueVideo(videoID.getText().toString());
-                    this.state.setActiveVideoId(videoID.getText().toString());
-                }
+            case R.id.b_forward:
+                //TODO: Implement back/forward in video
+                Toast.makeText(this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
                 break;
-
             case R.id.button_create_moment:
                 this.momentCreation.setVisibility(View.VISIBLE);
                 break;
 
+            case R.id.b_rewind:
+                Toast.makeText(this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
+                break;
             case R.id.button_submit_moment:
                 activeMoment = new MomentEntity(this.state.getActiveVideoId(),
                         this.player.getCurrentTimeMillis(),
                         this.momentLabel.getText().toString(),
                         this.momentDescription.getText().toString());
-                RadioButton radioButton = new RadioButton(this);
-                radioButton.setText(activeMoment.getLabel());
-                moments.addView(radioButton);
-                this.momentCreation.setVisibility(View.GONE);
-                this.momentLabel.setText("");
-                this.momentDescription.setText("");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         saveMoment();
                     }
                 }).start();
+                RadioButton radioButton = new RadioButton(this);
+                radioButton.setText(activeMoment.getLabel());
+                moments.addView(radioButton);
+                this.momentCreation.setVisibility(View.GONE);
+                this.momentLabel.setText("");
+                this.momentDescription.setText("");
                 radioButton.setId(activeMoment.getMomentId());
                 break;
-
+            case R.id.button_change_video:
+                if(this.player != null){
+                    player.cueVideo(videoID.getText().toString());
+                    this.state.setActiveVideoId(videoID.getText().toString());
+                }
+                break;
+            case R.id.b_resume_playlist:
+                //TODO: Implement resume playlist
+                Toast.makeText(this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.b_change_playlist:
+                //TODO: Implement Change Playlist
+                Toast.makeText(this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
+                break;
             case R.id.button_load_moment:
                 new Thread(new Runnable() {
                     @Override
@@ -152,23 +195,22 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
                     }
                 }).start();
                 break;
+            case R.id.b_moment_details:
+                //TODO: Implement Show Moment Details
+                Toast.makeText(this, "Not Implemented Yet", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
     private void loadState(){
         Looper.prepare();
-        this.allMoments = this.database.momentDao().allMoments();
-        this.state = this.database.stateDao().getState();
-
-        if(this.state == null){
-            this.state = new StateEntity("PL7atuZxmT954bCkC062rKwXTvJtcqFB8i", 1, 1, "i-p9lWIhcLQ");
-            database.stateDao().insertState(this.state);
-        }
-
+        this.state = stateManager.loadState();
+        this.allMoments = momentManager.getMoments();
     }
 
     private void saveMoment(){
-        this.database.momentDao().insertMoments(activeMoment);
+        activeMoment = momentManager.createMoment(activeMoment.getVideoId(), activeMoment.getVideoTime(),
+                activeMoment.getLabel(), activeMoment.getDescription());
     }
 
     private void loadMoments(){
@@ -181,20 +223,21 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     }
 
     private void loadMoment(){
-        this.activeMoment = this.database.momentDao().getMoment(moments.getCheckedRadioButtonId());
+        this.activeMoment = momentManager.getMoment(moments.getCheckedRadioButtonId());
         if(this.player != null && this.activeMoment != null){
             player.cueVideo(activeMoment.getVideoId(), activeMoment.getVideoTime());
             this.state.setActiveVideoId(activeMoment.getVideoId());
-            database.stateDao().updateState(this.state);
+            stateManager.updateState(this.state);
+            player.play();
         }
     }
 
     private void deleteMoment(){
         Looper.prepare();
-        this.activeMoment = this.database.momentDao().getMoment(moments.getCheckedRadioButtonId());
+        this.activeMoment = momentManager.getMoment(moments.getCheckedRadioButtonId());
         if(this.activeMoment != null) {
             moments.removeView(findViewById(activeMoment.getMomentId()));
-            this.database.momentDao().deleteMoment(activeMoment);
+            this.momentManager.deleteMoment(activeMoment);
             this.activeMoment = null;
         }
     }

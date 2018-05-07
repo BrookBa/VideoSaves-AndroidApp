@@ -1,19 +1,14 @@
 package com.codeflowsolutions.videosaves.backend.data;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.room.Database;
-import android.arch.persistence.room.DatabaseConfiguration;
-import android.arch.persistence.room.InvalidationTracker;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 
-import com.codeflowsolutions.videosaves.backend.data.GroupEntity;
-import com.codeflowsolutions.videosaves.backend.data.MomentEntity;
-import com.codeflowsolutions.videosaves.backend.data.GroupDao;
+import com.codeflowsolutions.videosaves.backend.data.DAO.GroupDao;
+import com.codeflowsolutions.videosaves.backend.data.DAO.MomentDao;
+import com.codeflowsolutions.videosaves.backend.data.DAO.MomentGroupJTDao;
+import com.codeflowsolutions.videosaves.backend.data.DAO.StateDao;
 
 
 @Database(entities = {GroupEntity.class, MomentEntity.class, MomentGroupJT.class, StateEntity.class}, version = 1, exportSchema = false)
